@@ -115,7 +115,7 @@
     <tool file="maf/vcf_to_maf_customtrack.xml" />
   </section>
 
-  <label text="Galaxy ProTo" id="proto_label">
+  <label text="Galaxy ProTo" id="proto_label" />
 
   <section id="protoTools" name="ProTo development tools">
     <tool file="proto/GenerateToolsTool.xml" />

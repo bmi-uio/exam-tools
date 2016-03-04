@@ -120,3 +120,4 @@ doc/build
 \#*
 .bitpocket
 *.komodoproject
+.idea

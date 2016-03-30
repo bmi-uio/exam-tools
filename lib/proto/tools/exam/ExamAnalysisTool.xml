@@ -1,0 +1,4 @@
+<tool id="ProTo_ExamAnalysisTool" name="Overview of task scores" version="1.0.0"
+  tool_type="hyperbrowser_generic" proto_tool_module="proto.tools.exam.ExamAnalysisTool" proto_tool_class="ExamAnalysisTool">
+  <description></description>
+</tool>

@@ -1,0 +1,4 @@
+<tool id="ProTo_ExamDataConcatenateTool" name="Concatenate two exam data files" version="1.0.0"
+  tool_type="hyperbrowser_generic" proto_tool_module="proto.tools.exam.ExamDataConcatenateTool" proto_tool_class="ExamDataConcatenateTool">
+  <description></description>
+</tool>

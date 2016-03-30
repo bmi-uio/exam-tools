@@ -1,0 +1,4 @@
+<tool id="ProTo_TaskCorrelationAnalysisTool" name="Task correlation heatmap" version="1.0.0"
+  tool_type="hyperbrowser_generic" proto_tool_module="proto.tools.exam.TaskCorrelationAnalysisTool" proto_tool_class="TaskCorrelationAnalysisTool">
+  <description></description>
+</tool>

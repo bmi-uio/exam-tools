@@ -1,0 +1,4 @@
+<tool id="ProTo_IndividualTaskAnalysisTool" name="Individual task scores analysis" version="1.0.0"
+  tool_type="hyperbrowser_generic" proto_tool_module="proto.tools.exam.IndividualTaskAnalysisTool" proto_tool_class="IndividualTaskAnalysisTool">
+  <description></description>
+</tool>

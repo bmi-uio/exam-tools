@@ -1,0 +1,4 @@
+<tool id="ProTo_ExamTaskScatterPlotTool" name="Tasks scatter plots generator tool" version="1.0.0"
+  tool_type="hyperbrowser_generic" proto_tool_module="proto.tools.exam.ExamTaskScatterPlotTool" proto_tool_class="ExamTaskScatterPlotTool">
+  <description></description>
+</tool>

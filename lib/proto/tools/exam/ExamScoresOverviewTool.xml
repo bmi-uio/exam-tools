@@ -1,0 +1,4 @@
+<tool id="ProTo_ExamScoresOverviewTool" name="Overview of exam scores" version="1.0.0"
+  tool_type="hyperbrowser_generic" proto_tool_module="proto.tools.exam.ExamScoresOverviewTool" proto_tool_class="ExamScoresOverviewTool">
+  <description></description>
+</tool>

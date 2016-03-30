@@ -118,6 +118,6 @@ doc/build
 *.rej
 *~
 \#*
-.bitpocket
-*.komodoproject
 .idea
+.stversions
+.stfolder

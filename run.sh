@@ -6,8 +6,35 @@ cd `dirname $0`
 # should run this instance in.
 if [ -d .venv ];
 then
+    # R setup for Galaxy ProTo.
+    # Thanks to Dr. Paul Harrison for the setup
+    # (http://www.logarithmic.net/pfh/blog/01415014891)
+
+    if [ ! -d .venv/R/library ];
+    then
+        printf "Setting up R in virtualenv at %s/.venv\n" $(pwd)
+
+        echo 'export R_LIBS=$VIRTUAL_ENV/R/library' >>.venv/bin/activate
+        for LIB in .venv/lib/python*
+        do
+            echo 'import os,sys; os.environ["R_LIBS"]=sys.prefix+"/R/library"' >$LIB/sitecustomize.py
+        done
+
+        echo ". `pwd`/.venv/bin/activate && `which R` \$@" >.venv/bin/R
+        echo ". `pwd`/.venv/bin/activate && `which Rscript` \$@" >.venv/bin/Rscript
+        chmod a+x .venv/bin/R .venv/bin/Rscript
+
+        mkdir .venv/R
+        mkdir .venv/R/library
+    fi
+
     printf "Activating virtualenv at %s/.venv\n" $(pwd)
     . .venv/bin/activate
+else
+    printf "Requires virtualenv at %s/.venv.\n" $(pwd)
+    printf "Please run 'virtualenv %s/.venv'.\n" $(pwd)
+    printf "The newest Galaxy update will provide this automatically.\n"
+    exit 1
 fi
 
 # If there is a file that defines a shell environment specific to this
@@ -26,6 +53,11 @@ python ./scripts/check_python.py
 [ $? -ne 0 ] && exit 1
 
 ./scripts/common_startup.sh
+
+if [ ! $? -eq 0 ]; then
+    echo "Error in './scripts/common_startup.sh'. Exiting."
+    exit 1
+fi
 
 if [ -n "$GALAXY_UNIVERSE_CONFIG_DIR" ]; then
     python ./scripts/build_universe_config.py "$GALAXY_UNIVERSE_CONFIG_DIR"

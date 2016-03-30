@@ -61,3 +61,11 @@ if [ -f $PROTO_TOOL_CACHE ]; then
     echo -n "Clearing ProTo register... "
     rm -v $PROTO_TOOL_CACHE
 fi
+
+python ./scripts/R_install_packages.py
+if [ $? -eq 0 ]; then
+    echo "R library loading successful."
+else
+    echo "R library loading failed."
+    exit 1
+fi

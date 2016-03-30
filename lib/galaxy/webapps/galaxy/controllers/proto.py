@@ -77,7 +77,7 @@ class ProtoController( BaseUIController ):
             mako = mako[0]
         
         trans.sa_session.flush()
-        trans.sa_session.close()
+        # trans.sa_session.close()
 
         my_end, your_end = Pipe()
         proc = Process(target=self.__index_pipe, args=(your_end,trans,str(mako)))

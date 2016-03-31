@@ -151,7 +151,11 @@ def drawMultiHistogram(data, mainTitle, xTitle, yTitle, names=None, colors=None,
 
     legend = robjects.r.legend
 
-    plotData = [robjects.FloatVector(x) for x in data]
+    # plotData = [robjects.FloatVector(x) for x in data]
+    plotData = robjects.ListVector.from_length(len(data))
+    for i,x in enumerate(data):
+        plotData[i] = x
+
     multhist(plotData, col=colors, main=mainTitle, beside=True, xlab=xTitle, ylab=yTitle)
     if hasLegend:
         legend('topleft', legend=names, pch=15, col=colors, bty='n')

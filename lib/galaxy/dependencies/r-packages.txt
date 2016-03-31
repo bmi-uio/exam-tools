@@ -1,3 +1,6 @@
 # This file contains the names of the R libraries required.
 # The run.sh script will install these libraries in the
 # .venv/R/library virtualenv directory.
+
+vioplot
+plotrix

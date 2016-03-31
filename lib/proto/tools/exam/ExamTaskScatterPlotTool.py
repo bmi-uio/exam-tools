@@ -144,7 +144,7 @@ class ExamTaskScatterPlotTool(GeneralGuiTool):
         examAnalysis = TaskScatterPlotAnalysis(resultsFN, galaxyFn)      
         examAnalysis.run(selectedTasks=selectedTasks)  
         
-        core = HtmlCore.HtmlCore()
+        core = HtmlCore()
         core.begin()
         for plotUrl in examAnalysis.getPlotUrls():
             core.divBegin(divId='plot')

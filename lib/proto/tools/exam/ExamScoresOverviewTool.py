@@ -276,4 +276,4 @@ class ExamScoresOverviewTool(GeneralGuiTool):
         case, all all print statements are redirected to the info field of the
         history item box.
         '''
-        return 'customhtml'
+        return 'html'

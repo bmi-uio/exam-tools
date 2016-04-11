@@ -1,7 +1,9 @@
 from ConfigParser import SafeConfigParser
 import os
 
+
 GALAXY_BASE_DIR = os.path.abspath(os.path.dirname(__file__) + '/../../../.')
+
 
 def getUniverseConfigParser():
     config = SafeConfigParser({'here': GALAXY_BASE_DIR})
@@ -12,16 +14,19 @@ def getUniverseConfigParser():
         raise Exception('No Galaxy config file found at path: ' + configFn)
     return config
 
+
 def getFromConfig(config, key, default, section='app:main'):
     try:
         return config.get(section, key)
     except:
         return default
 
+
 def getUrlPrefix(config):
     prefix = getFromConfig(config, 'prefix', '', 'filter:proxy-prefix')
     filterWith = getFromConfig(config, 'filter-with', '', 'app:main')
     return prefix if filterWith == 'proxy-prefix' else ''
+
 
 config = getUniverseConfigParser()
 
@@ -40,10 +45,13 @@ GALAXY_FILE_PATH = GALAXY_BASE_DIR + '/' + getFromConfig(config, 'file_path', 'd
 def userHasFullAccess(galaxyUserName):
     return galaxyUserName in ADMIN_USERS if galaxyUserName is not None else False
 
+
 def galaxyGetSecurityHelper(config):
     from galaxy.web.security import SecurityHelper
 
-    id_secret = getFromConfig(config, 'id_secret', 'USING THE DEFAULT IS NOT SECURE!')
+    id_secret = getFromConfig(config, 'proto_id_secret',
+                              'USING THE DEFAULT IS ALSO NOT SECURE!',
+                              section='galaxy_proto')
     return SecurityHelper(id_secret=id_secret)
 
 

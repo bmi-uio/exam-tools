@@ -1063,3 +1063,24 @@ use_interactive = True
 #routing_key = bar_code_scanner
 #rabbitmqctl_path = /path/to/rabbitmqctl
 
+
+
+# ---- Galaxy ProTo -------------------------------------------------
+
+# Settings for use in Galaxy Prototyping tools (Galaxy ProTo)
+
+[galaxy_proto]
+
+# Galaxy ProTo mainly uses the dataset id instead of the history id to reference
+# a dataset. In order to close a potential security hole, ProTo uses a separate
+# secret phrase for encoding the dataset id. As with id_secret, you should set
+# a key to be used by the algorithm that encodes and decodes these values.
+# It can be any string.  If left unchanged, anyone could construct a cookie that
+# would grant them access to others' sessions.
+# One simple way to generate a value for this is with the shell command:
+#   python -c 'import time; print time.time()' | md5sum | cut -f 1 -d ' '
+#
+# Note that changing the value of proto_id_secret will break the redo functionality
+# of existing jobs in history!
+#
+#proto_id_secret = USING THE DEFAULT IS ALSO NOT SECURE!

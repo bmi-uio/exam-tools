@@ -21,6 +21,7 @@ import re
 import urllib
 import contextlib
 
+
 def ensurePathExists(fn):
     "Assumes that fn consists of a basepath (folder) and a filename, and ensures that the folder exists."
     path = os.path.split(fn)[0]
@@ -30,6 +31,7 @@ def ensurePathExists(fn):
         os.makedirs(path)
         #os.umask(oldMask)
 
+
 def reloadModules():
     for module in [val for key,val in sys.modules.iteritems() \
                    if key.startswith('gold') or key.startswith('quick') or key.startswith('test')]:
@@ -37,6 +39,7 @@ def reloadModules():
             reload(module)
         except:
             print module
+
 
 def wrapClass(origClass, keywords={}):
     #for key in keywords.keys():
@@ -49,6 +52,7 @@ def wrapClass(origClass, keywords={}):
     wrapped = functools.partial(origClass, *args, **keywords)
     functools.update_wrapper(wrapped, origClass)
     return wrapped
+
 
 def extractIdFromGalaxyFn(fn):
     '''
@@ -100,34 +104,54 @@ def extractIdFromGalaxyFn(fn):
 
     return id
 
+
 def createFullGalaxyIdFromNumber(num):
+    num = int(num)
     id2 = str(num)
-    id1 =  ('%.3f' % (int(id2)/1000 *1.0 / 1000))[2:]
+    id1 =  '%03d' % (num / 1000)
     return [id1, id2]
 
-def getGalaxyFnFromDatasetId(num):
-    from config.Config import GALAXY_FILE_PATH
+
+def getGalaxyFnFromDatasetId(num, galaxyFilePath=None):
+    if not galaxyFilePath:
+        from proto.config.Config import GALAXY_FILE_PATH
+        galaxyFilePath = GALAXY_FILE_PATH
+
     id1, id2 = createFullGalaxyIdFromNumber(num)
-    return os.path.join(GALAXY_FILE_PATH, id1, 'dataset_%s.dat' % id2)
+    return os.path.join(galaxyFilePath, id1, 'dataset_%s.dat' % id2)
+
 
 def galaxySecureEncodeId(plainId):
-    from config.Config import GALAXY_SECURITY_HELPER_OBJ
+    from proto.config.Config import GALAXY_SECURITY_HELPER_OBJ
     return GALAXY_SECURITY_HELPER_OBJ.encode_id(plainId)
 
+
 def galaxySecureDecodeId(encodedId):
-    from config.Config import GALAXY_SECURITY_HELPER_OBJ
+    from proto.config.Config import GALAXY_SECURITY_HELPER_OBJ
     return GALAXY_SECURITY_HELPER_OBJ.decode_id(encodedId)
+
 
 def getEncodedDatasetIdFromPlainGalaxyId(plainId):
     return galaxySecureEncodeId(plainId)
+
 
 def getEncodedDatasetIdFromGalaxyFn(cls, galaxyFn):
     plainId = extractIdFromGalaxyFn(galaxyFn)[1]
     return getEncodedDatasetIdFromPlainGalaxyId(plainId)
 
-def getGalaxyFnFromEncodedDatasetId(encodedId):
+
+def getGalaxyFnFromEncodedDatasetId(encodedId, galaxyFilePath=None):
     plainId = galaxySecureDecodeId(encodedId)
-    return getGalaxyFnFromDatasetId(plainId)
+    return getGalaxyFnFromDatasetId(plainId, galaxyFilePath=galaxyFilePath)
+
+
+def getGalaxyFnFromAnyDatasetId(id, galaxyFilePath=None):
+    try:
+        return getGalaxyFnFromEncodedDatasetId(id,
+                                               galaxyFilePath=galaxyFilePath)
+    except:
+        return getGalaxyFnFromDatasetId(id, galaxyFilePath=galaxyFilePath)
+
 
 def getGalaxyFilesDir(galaxyFn):
     return galaxyFn[:-4] + '_files'
@@ -135,26 +159,63 @@ def getGalaxyFilesDir(galaxyFn):
     '''
     id is the relative file hierarchy, encoded as a list of strings
     '''
+
+
 def getGalaxyFilesFilename(galaxyFn, id):
     return os.path.sep.join([getGalaxyFilesDir(galaxyFn)] + id)
+
 
 def getGalaxyFilesFnFromEncodedDatasetId(encodedId):
     galaxyFn = getGalaxyFnFromEncodedDatasetId(encodedId)
     return getGalaxyFilesDir(galaxyFn)
 
+
 def createGalaxyFilesFn(galaxyFn, filename):
     return os.path.sep.join([getGalaxyFilesDir(galaxyFn), filename])
 
-#def getUniqueRunSpecificId(id=[]):
+
+def createGalaxyFilesFn(galaxyFn, filename):
+    return os.path.sep.join(
+        [getGalaxyFilesDir(galaxyFn), filename])
+
+
+def extractFnFromDatasetInfo(datasetInfo):
+    if isinstance(datasetInfo, basestring):
+        datasetInfo = datasetInfo.split(':')
+    return getGalaxyFnFromEncodedDatasetId(datasetInfo[2])
+
+
+def extractFileSuffixFromDatasetInfo(datasetInfo, fileSuffixFilterList=None):
+    if isinstance(datasetInfo, basestring):
+        datasetInfo = datasetInfo.split(':')
+
+    suffix = datasetInfo[1]
+
+    if fileSuffixFilterList and not suffix.lower() in fileSuffixFilterList():
+        raise Exception('File type "' + suffix + '" is not supported.')
+
+    return suffix
+
+
+def extractNameFromDatasetInfo(datasetInfo):
+    if isinstance(datasetInfo, basestring):
+        datasetInfo = datasetInfo.split(':')
+
+    from urllib import unquote
+    return unquote(datasetInfo[-1])
+
+
+# def getUniqueRunSpecificId(id=[]):
 #    return ['run_specific'] + id
 #
-#def getUniqueWebPath(id=[]):
-#    from config.Config import STATIC_PATH
+# def getUniqueWebPath(id=[]):
+#    from proto.config.Config import STATIC_PATH
 #    return os.sep.join([STATIC_PATH] + getUniqueRunSpecificId(id))
+
 
 def getLoadToGalaxyHistoryURL(fn, genome='hg18', galaxyDataType='bed', urlPrefix=None):
     if urlPrefix is None:
-        from config.Config import URL_PREFIX
+        from proto.config.Config import URL_PREFIX
         urlPrefix = URL_PREFIX
 
     import base64
@@ -164,16 +225,18 @@ def getLoadToGalaxyHistoryURL(fn, genome='hg18', galaxyDataType='bed', urlPrefix
     return urlPrefix + '/tool_runner?tool_id=file_import_%s&dbkey=%s&runtool_btn=yes&input=' % (galaxyDataType, genome) \
             + base64.urlsafe_b64encode(fn) + ('&datatype='+galaxyDataType if galaxyDataType is not None else '')
 
-#def getRelativeUrlFromWebPath(webPath):
-#    from config.Config import GALAXY_BASE_DIR, URL_PREFIX
+# def getRelativeUrlFromWebPath(webPath):
+#    from proto.config.Config import GALAXY_BASE_DIR, URL_PREFIX
 #    if webPath.startswith(GALAXY_BASE_DIR):
 #        return URL_PREFIX + webPath[len(GALAXY_BASE_DIR):]
+
 
 def isFlatList(list):
     for l in list:
         if type(l) == type([]):
             return False
     return True
+
 
 def flattenList(list):
     '''
@@ -185,8 +248,10 @@ def flattenList(list):
     else:
         return flattenList( reduce(lambda x,y: x+y, list ) )
 
+
 def listStartsWith(a, b):
     return len(a) > len(b) and a[:len(b)] == b
+
 
 def isNan(a):
     import numpy
@@ -196,12 +261,15 @@ def isNan(a):
     except (TypeError, NotImplementedError):
         return False
 
+
 def isListType(x):
     import numpy
     return type(x) == list or type(x) == tuple or isinstance(x, numpy.ndarray) or isinstance(x, dict)
 
+
 def ifDictConvertToList(d):
     return [(x, d[x]) for x in sorted(d.keys())] if isinstance(d, dict) else d
+
 
 def smartRecursiveAssertList(x, y, assertEqualFunc, assertAlmostEqualFunc):
     import numpy
@@ -237,6 +305,7 @@ def smartRecursiveAssertList(x, y, assertEqualFunc, assertAlmostEqualFunc):
         except TypeError:
             return assertEqualFunc(x, y)
 
+
 def bothIsNan(a, b):
     import numpy
 
@@ -247,13 +316,16 @@ def bothIsNan(a, b):
         pass
     return False
 
+
 def smartEquals(a, b):
     if bothIsNan(a, b):
         return True
     return a == b
 
+
 def smartRecursiveEquals(a, b):
     return smartRecursiveAssertList(a, b, smartEquals, smartEquals)
+
 
 def reorderTrackNameListFromTopDownToBottomUp(trackNameSource):
     prevTns = []
@@ -272,21 +344,26 @@ def reorderTrackNameListFromTopDownToBottomUp(trackNameSource):
         while len(prevTns) > 0:
             yield prevTns.pop(0)
 
+
 R_ALREADY_SILENCED = False
+R_ALREADY_SILENCED_OUTPUT = False
+
+
 def silenceRWarnings():
     global R_ALREADY_SILENCED
     if not R_ALREADY_SILENCED:
-        from gold.application.RSetup import r
+        from proto.RSetup import r
         r('sink(file("/dev/null", open="wt"), type="message")')
         R_ALREADY_SILENCED = True
 
-R_ALREADY_SILENCED_OUTPUT = False
+
 def silenceROutput():
     global R_ALREADY_SILENCED_OUTPUT
     if not R_ALREADY_SILENCED_OUTPUT:
-        from gold.application.RSetup import r
+        from proto.RSetup import r
         r('sink(file("/dev/null", open="wt"), type="output")')
         R_ALREADY_SILENCED_OUTPUT = True
+
 
 def createHyperBrowserURL(genome, trackName1, trackName2=None, track1file=None, track2file=None, \
                           demoID=None, analcat=None, analysis=None, \
@@ -329,17 +406,19 @@ def createHyperBrowserURL(genome, trackName1, trackName2=None, track1file=None, 
     #genes not __genes__?
     #encode?
 
-    from config.Config import URL_PREFIX
+    from proto.config.Config import URL_PREFIX
     return URL_PREFIX + '/hyper?' + '&'.join([urllib.quote(key) + '=' + \
                                               urllib.quote(value) for key,value in urlParams])
 
+
 def createToolURL(toolId, **kwArgs):
-    from config.Config import URL_PREFIX
+    from proto.config.Config import URL_PREFIX
     return URL_PREFIX + '/hyper?mako=generictool&tool_id=' + toolId + \
             ''.join(['&' + urllib.quote(key) + '=' + urllib.quote(value) for key,value in kwArgs.iteritems()])
 
+
 def createGalaxyToolURL(toolId, **kwArgs):
-    from config.Config import URL_PREFIX
+    from proto.config.Config import URL_PREFIX
     return URL_PREFIX + '/tool_runner?tool_id=' + toolId + \
             ''.join(['&' + urllib.quote(key) + '=' + urllib.quote(value) for key,value in kwArgs.iteritems()])
 
@@ -347,6 +426,7 @@ def createGalaxyToolURL(toolId, **kwArgs):
 
 def numAsPaddedBinary(comb, length):
     return '0'*(length-len(bin(comb)[2:]))+bin(comb)[2:]
+
 
 @contextlib.contextmanager
 def changedWorkingDir(new_dir):
@@ -357,11 +437,13 @@ def changedWorkingDir(new_dir):
     finally:
         os.chdir(orig_dir)
 
+
 def convertTNstrToTNListFormat(tnStr, doUnquoting=False):
     tnList = re.split(':|\^|\|', tnStr)
     if doUnquoting:
         tnList = [urllib.unquote(x) for x in tnList]
     return tnList
+
 
 #used by echo
 def format_arg_value(arg_val):
@@ -372,6 +454,7 @@ def format_arg_value(arg_val):
     """
     arg, val = arg_val
     return "%s=%r" % (arg, val)
+
 
 def echo(fn, write=sys.stdout.write):
     """ Echo calls to a function.
@@ -425,15 +508,17 @@ def getGeSource(track, genome=None):
     except:
         return FullTrackGenomeElementSource(genome, track, allowOverlaps=False)
 
-#generate powerset for set
-#powerset([a,b,c]) = [(), (a), (b), (c), (a,b), (a,c), (a,b), (a,b,c))
+
+# generate powerset for set
+# powerset([a,b,c]) = [(), (a), (b), (c), (a,b), (a,c), (a,b), (a,b,c))
 def powerset(iterable):
     from itertools import chain, combinations
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
-#Generate all supersets of a set represented by a binary string
-#e.g. allSupersets('010') = ['110','011','111']
+
+# Generate all supersets of a set represented by a binary string
+# e.g. allSupersets('010') = ['110','011','111']
 def allSupersets(binaryString):
     length = len(binaryString)
     binaryList = list(binaryString)
@@ -441,6 +526,7 @@ def allSupersets(binaryString):
     for comb in powerset(zeroIndex):
         if comb:
             yield ''.join([binaryList[i] if i not in comb else '1' for i in range(length)])
+
 
 def getUniqueFileName(origFn):
     import os

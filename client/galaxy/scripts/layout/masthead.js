@@ -60,7 +60,8 @@ var View = Backbone.View.extend({
     },
 
     render: function() {
-        this.$navbarBrandTitle.html( 'Galaxy ' + ( this.options.brand && '/ ' + this.options.brand || '' ) );
+        // this.$navbarBrandTitle.html( 'Galaxy ' + ( this.options.brand && '/ ' + this.options.brand || '' ) );
+        this.$navbarBrandTitle.html( 'Exam tools' );
         this.$navbarBrandLink.attr( 'href', this.options.logo_url );
         this.$navbarBrandImage.attr( 'src', Galaxy.root + 'static/images/galaxyIcon_noText.png' );
         this.quotaMeter.render();

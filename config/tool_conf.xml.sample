@@ -2,13 +2,17 @@
 <toolbox monitor="true">
   <label text="Exam tools" id="exam_label" />
 
-  <section id="examAnalysis" name="Exam analysis">
-	<tool file="proto/exam/ExamDataEditTool.xml" />
-	<tool file="proto/exam/ExamScoresOverviewTool.xml" />
-	<tool file="proto/exam/TaskCorrelationAnalysisTool.xml" />
-	<tool file="proto/exam/ExamTaskScatterPlotTool.xml" />
-	<tool file="proto/exam/IndividualTaskAnalysisTool.xml" />
-	<tool file="proto/exam/ExamAnalysisTool.xml" />
+  <section id="examAnalysis" name="Analyze exam results">
+        <tool file="proto/exam/ExamAnalysisTool.xml" />
+        <tool file="proto/exam/IndividualTaskAnalysisTool.xml" />
+        <tool file="proto/exam/ExamTaskScatterPlotTool.xml" />
+        <tool file="proto/exam/TaskCorrelationAnalysisTool.xml" />
+        <tool file="proto/exam/ExamScoresOverviewTool.xml" />
+  </section>
+
+  <section id="examData" name="Edit exam data">
+        <tool file="proto/exam/ExamDataEditTool.xml" />
+        <tool file="proto/exam/ExamDataConcatenateTool.xml" />
   </section>
 
   <label text="Standard Galaxy" id="galaxy_label" />
@@ -39,14 +43,14 @@
     <tool file="data_source/hbvar.xml" />
     <tool file="genomespace/genomespace_file_browser_prod.xml" />
     <tool file="genomespace/genomespace_importer.xml" />
-    <tool file="validation/fix_errors.xml" />
+    <tool file="validation/fix_errors.xml" />-->
   </section>
-  <section id="send" name="Send Data">
+  <!--<section id="send" name="Send Data">
     <tool file="genomespace/genomespace_exporter.xml" />
   </section>
   <section id="liftOver" name="Lift-Over">
     <tool file="extract/liftOver_wrapper.xml" />
-  </section>
+  </section>-->
   <section id="textutil" name="Text Manipulation">
     <tool file="filters/fixedValueColumn.xml" />
     <tool file="filters/catWrapper.xml" />
@@ -70,13 +74,13 @@
     <tool file="filters/sorter.xml" />
     <tool file="filters/grep.xml" />
     
-    <label id="gff" text="GFF" />
+    <!--label id="gff" text="GFF" />
     <tool file="filters/gff/extract_GFF_Features.xml" />
     <tool file="filters/gff/gff_filter_by_attribute.xml" />
     <tool file="filters/gff/gff_filter_by_feature_count.xml" />
-    <tool file="filters/gff/gtf_filter_by_attribute_values_list.xml" />
+    <tool file="filters/gff/gtf_filter_by_attribute_values_list.xml" />-->
   </section>
-  <section id="group" name="Join, Subtract and Group">
+  <!--<section id="group" name="Join, Subtract and Group">
     <tool file="filters/joiner.xml" />
     <tool file="filters/compare.xml" />
     <tool file="stats/grouping.xml" />
@@ -133,7 +137,5 @@
     <tool file="proto/GenerateToolsTool.xml" />
     <tool file="proto/ExploreToolsTool.xml" />
     <tool file="proto/InstallToolsTool.xml" />
-  </section>
-  <section id="installedProto" name="Installed ProTo tools">
   </section>
 </toolbox>
